@@ -1,6 +1,11 @@
 import pandas as pd 
 from datetime import date 
 import csv
+import os
+# Import products menu function
+from products_function import products_main
+# Import to hash and salt passwords
+import hashlib
 
 # Menu display options
 def display_menu() : 
@@ -30,11 +35,20 @@ def login() :
         input_password = input("Enter password : ").strip()
         if input_password == user_data[input_username] :
             print("Login successful !")
-            # redirect to product menu :)))))))))))))))))))
+            # redirect to 'products_function.py' 
+            products_main(input_username)
         else :
             print("Incorrect password.")
     else :
         print("Username not found. Try again or create an accout.")
+
+# Generate salted hashing
+def hash_password(password, salt=None) :
+    if not salt :
+        salt = os.urandom(16).hex()
+    salted_password = salt + password
+    hashed_password = hashlib.sha512(salted_password.encode('utf-8')).hexdigest()
+    return salt, hashed_password
 
 # sign up function 
 
@@ -51,6 +65,11 @@ def get_last_ID() :
 # add user function
 def new_user() :
     last_id = get_last_ID()
+    # read existing user data
+    try :
+        users_df = pd.read_csv('users.csv')
+    except :
+        users_df = pd.DataFrame(columns=["ID", "first_name", "last_name", "username", "password", "order_date"])
     # ask for sign up details 
     new_name = input("Enter your first name : ")
     new_lname = input("Enter your last name : ")
@@ -58,21 +77,38 @@ def new_user() :
     new_password = input("Enter your password : ")
     new_date = 'NA'
     new_id = last_id + 1
+    # Define the folder path for products csv file creation 
+    folder_path = 'csv_files'
+    if not os.path.exists(folder_path) :
+        os.makedirs(folder_path)
+    # check if username already exists 
+    if new_username in users_df['username'].values :
+        print("Username already exists.")
+        return
     # Define new row
     new_user_data = {
         'ID': [new_id],
         'first_name': [new_name],
         'last_name': [new_lname],
         'username': [new_username],
-        'password': [new_password],
+        'salt': [salt],
+        'hashed_password': [hashed_password]
         'order_date': [new_date]
     }
     new_df = pd.DataFrame(new_user_data)
     # add new user info to csv file
-    new_df.to_csv('users.csv', mode='a',index=False, header=False)
+    if not users_df.empty :
+        new_df.to_csv('users.csv', mode='a',index=False, header=False)
+    else :
+        new_df.to_csv('users.csv', mode='w',index=False, header=True)
     print("New user added successfully!")
+    # Create new csv products file
+    orders_file = os.path.join(folder_path,f'orders_{new_username}.csv')
+    if not os.path.exists(orders_file) :
+        orders_df = pd.DataFrame(columns=["ID", "first_name", "last_name", "username", "password", "order_date"])
+        orders_df.to_csv(orders_file, index=False)
+    print(f"Orders file '{orders_file}' created in '{folder_path}' folder.")
     
-    # create blank csv with fieldnames and name the file 'orders'_'username'.csv
 
 
 
