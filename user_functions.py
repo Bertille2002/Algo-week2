@@ -3,7 +3,7 @@ from datetime import date
 import csv
 import os
 # Import products menu function
-from products_function import products_main
+from menu_products import *
 # Import to hash and salt passwords
 import hashlib
 
@@ -29,18 +29,18 @@ def load_user_data():
 
 # login function
 def login() : 
-    user_data = load_user_data('users.csv')
+    user_data = load_user_data()
     input_username = input("Enter your username : ").strip()
     if input_username in user_data :
         input_password = input("Enter password : ").strip()
         if input_password == user_data[input_username] :
             print("Login successful !")
             # redirect to 'products_function.py' 
-            products_main(input_username)
+            products_main()
         else :
             print("Incorrect password.")
     else :
-        print("Username not found. Try again or create an accout.")
+        print("Username not found. Try again or create an account.")
 
 # Generate salted hashing
 def hash_password(password, salt=None) :
@@ -92,7 +92,7 @@ def new_user() :
         'last_name': [new_lname],
         'username': [new_username],
         'salt': [salt],
-        'hashed_password': [hashed_password]
+        'hashed_password': [hashed_password],
         'order_date': [new_date]
     }
     new_df = pd.DataFrame(new_user_data)

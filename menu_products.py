@@ -1,6 +1,7 @@
 ### Menu interactif ###
 import csv
 from products_functions import *
+from user_functions import *
 
 # fonctions options du menu 
 def products_main():

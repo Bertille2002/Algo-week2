@@ -85,7 +85,7 @@ def delete_product() :
 def binary_search() :
     product_name = input("Enter product name for search : ") # Demander quel produit à rechercher 
     try :
-        with open(produits 'r') as file :
+        with open(produits, 'r') as file :
             reader = csv.DictReader(file)
             rows = sorted(reader, key=lambda row: row['P_name'].lower()) # Trier liste par la colonne 'P_name' avec sorted() 
             # utliser lambda comme fonction anonyme pour convertir toutes les lettres en minuscule
@@ -138,7 +138,7 @@ def sorted_table(sorted_data) :
   for row in sorted_data:
     print(row)
 
-sorted_data = quicksort(data)
+# sorted_data = quicksort(data)
 
 # merge sort price
 def merge_sort(data, key_index) :
