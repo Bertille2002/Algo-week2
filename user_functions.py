@@ -36,19 +36,11 @@ def login() :
         if input_password == user_data[input_username] :
             print("Login successful !")
             # redirect to 'products_function.py' 
-            products_main()
+            products_main(input_username)
         else :
             print("Incorrect password.")
     else :
         print("Username not found. Try again or create an account.")
-
-# Generate salted hashing
-def hash_password(password, salt=None) :
-    if not salt :
-        salt = os.urandom(16).hex()
-    salted_password = salt + password
-    hashed_password = hashlib.sha512(salted_password.encode('utf-8')).hexdigest()
-    return salt, hashed_password
 
 # sign up function 
 
@@ -91,8 +83,7 @@ def new_user() :
         'first_name': [new_name],
         'last_name': [new_lname],
         'username': [new_username],
-        'salt': [salt],
-        'hashed_password': [hashed_password],
+        'password': [new_password],
         'order_date': [new_date]
     }
     new_df = pd.DataFrame(new_user_data)

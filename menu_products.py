@@ -2,9 +2,11 @@
 import csv
 from products_functions import *
 from user_functions import *
+from login_menu import *
+import pandas as pd  
 
 # fonctions options du menu 
-def products_main():
+def products_main(username):
   produits = f'csv_files/orders_{username}.csv' # definir le fichier individuel 
   print(f"Welcome, {username} ! You're now managing : {produits}.")
   while True :
