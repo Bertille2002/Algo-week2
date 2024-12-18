@@ -1,11 +1,20 @@
 import pandas as pd 
 from datetime import date 
-import csv
+# Generate unique salt
+import uuid 
 import os
 # Import products menu function
 from menu_products import *
 # Import to hash and salt passwords
 import hashlib
+
+# Hash and salt password using SHA-256
+def hash_password(password: str, salt: str) -> str :
+    return hashlib.sha256((salt + password).encode('utf-8')).hexdigest()
+
+# Generate random salt function
+def generate_salt() -> str :
+    return uuid.uuid4().hex
 
 # Menu display options
 def display_menu() : 
@@ -19,10 +28,12 @@ def display_menu() :
 def load_user_data():
     user_data = {}
     try:
-        with open('users.csv', mode='r') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                user_data[row['username']] = row['password']
+        df = pd.read_csv('users.csv')
+        for _, row in df.iterrows() :
+            user_data[row['username']] = {
+                'salt': row['salt'],
+                'password': row['password']
+            }
     except FileNotFoundError:
         print(f"Error: The file 'users.csv' does not exist.")
     return user_data
@@ -33,7 +44,9 @@ def login() :
     input_username = input("Enter your username : ").strip()
     if input_username in user_data :
         input_password = input("Enter password : ").strip()
-        if input_password == user_data[input_username] :
+        salt = user_data[input_username]['salt']
+        stored_hash = user_data[input_username]['password']
+        if hash_password(input_password, salt) == stored_hash :
             print("Login successful !")
             # redirect to 'products_function.py' 
             products_main(input_username)
@@ -77,6 +90,9 @@ def new_user() :
     if new_username in users_df['username'].values :
         print("Username already exists.")
         return
+    # Genertate salt and hash for password 
+    salt = generate_salt()
+    hashed_password = hash_password(new_password, salt)
     # Define new row
     new_user_data = {
         'ID': [new_id],
@@ -99,6 +115,9 @@ def new_user() :
         orders_df = pd.DataFrame(columns=["ID", "first_name", "last_name", "username", "password", "order_date"])
         orders_df.to_csv(orders_file, index=False)
     print(f"Orders file '{orders_file}' created in '{folder_path}' folder.")
+
+# def delete_user():
+        
     
 
 

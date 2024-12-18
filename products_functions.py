@@ -14,7 +14,7 @@ def display_menu():
 
 # Options du menu interactif de tri
 def sort_menu():
-  print("Choose sorting method : ")
+  print("Choose sorting method : ") 
   print("1. Sort by Quantity (QuickSort)")  
   print("2. Sort by Price (MergeSort)")  
   print("3. Sort by Product in alphabetical order (Bubble sort)")  

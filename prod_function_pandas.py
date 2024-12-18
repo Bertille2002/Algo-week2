@@ -1,4 +1,5 @@
 import csv
+import pandas as pd 
 
 # Options du menu interactif 
 def display_menu():
@@ -23,8 +24,8 @@ def sort_menu():
 
 # Option 1 : Afficher la liste de produits 
 def view_names() :
-  prod_df = pd.DataFrame(columns=["ID","P_name", "P_quantity", "P_price (in $/Kg)", "order_date"]) : # Ouvre notre liste de produit avec le mode read 
-    prod_df.to_csv # Lecture d'un fichier csv et convertion en dictionnaire Python 
+    prod_df = pd.DataFrame(columns=["ID","P_name", "P_quantity", "P_price (in $/Kg)", "order_date"])  # Ouvre notre liste de produit avec le mode read 
+    prod_df.to_csv(products_function, index = False) # Lecture d'un fichier csv et convertion en dictionnaire Python 
     print("List of products : ")
     for row in reader : # Parcours les lignes de donnees a partir du fichier csv 
       print(row['P_name']) # Montre la colonne avec les noms des produits uniquement 
@@ -33,51 +34,52 @@ def view_names() :
 
 # Defintion de l'ID du nouveau produit, Permet d'avoir un ID unique pour chaque produit
 def next_id() : 
-  with open(produits,'r',newline='') as file : # Ouvre notre liste de produit avec le mode read
-    reader = csv.reader(file)
+    prod_df = pd.DataFrame(columns=["ID","P_name", "P_quantity", "P_price (in $/Kg)", "order_date"]) # Ouvre notre liste de produit avec le mode read
+    prod_df.to_csv(products_data, index = False)
     rows = list(reader)
     last_row = rows[-1]
     last_id = int(last_row[0]) # Trouver la derniere ID dans la liste
     return last_id + 1 # résultat : ID pour nouveau produit
 
 # Ajout du nouveau produit dans la liste
-def new_product() : 
-  # Demande des détails du produit à l'utilisateur 
-  new_prod = input("Enter the name of a new product : ") 
-  new_quant = input("Enter its quantity : ") 
-  new_price = input("Enter its price (/kg) : ") 
-  new_expdate = input("Enter the expiration date (dd-mm-yy) : ") 
-  new_id = next_id() # Defintion de l'ID du nouveau produit grace a la fonction next_id()
-  new_row = [new_id,new_prod,new_quant,new_price,new_expdate] # Définition de la nouvelle ligne dans la liste
-  with open(produits, 'a', newline='') as file :
-    writer = csv.writer(file) # Lecture du fichier csv et convertion en dictionnaire Python 
-    writer.writerow(new_row) 
-  print("New product added successfully.")
-  with open(produits, 'r', newline='') as file :
-    content = file.read() # Lecture du contenu du fichier 
-    print(content)
-
+def new_product():
+    # Demande des détails du produit à l'utilisateur
+    new_prod = input("Enter the name of a new product : ")
+    new_quant = input("Enter its quantity : ")
+    new_price = input("Enter its price (/kg) : ")
+    new_expdate = input("Enter the expiration date (dd-mm-yy) : ")
+    new_id = next_id()  # Defintion de l'ID du nouveau produit grace a la fonction next_id()
+    new_row = [new_id, new_prod, new_quant, new_price, new_expdate]  # Définition de la nouvelle ligne dans la liste
+    
+    #The below line was incorrectly indented causing the error.
+    prod_df = pd.DataFrame(columns=["ID", "P_name", "P_quantity", "P_price (in $/Kg)", "order_date"])  # Ouvre notre liste de produit avec le mode read
+    
+    prod_df.to_csv('products.csv', index=False, mode='a', header=not isfile('products.csv'))  # Lecture du fichier csv et convertion en dictionnaire Python
+    # writer.writerow(new_row)
+    print("New product added successfully.")
+    prod_df = pd.DataFrame(columns=["ID", "P_name", "P_quantity", "P_price (in $/Kg)", "order_date"])  # Ouvre notre liste de produit avec le mode read
+    prod_df.to_csv(products.csv, index=False)  # Lecture du contenu du fichier
+    
 # Option 3 : delete product row
-def delete_product() :
+def delete_product(): 
   row_to_delete = input("Enter the row you wish to delete.")
-  try : # Utilisation de try en cas d'erreurs du fichier 
-    with open(produits, 'r') as file : 
-      reader = csv.DictReader(file)
-      rows = [row for row in reader if row["P_name"] != row_to_delete] # Définir les lignes qui ne correspondent pas à celle indiqué pour deletion
-    with open(produits,'r') as file : 
-      total_rows = sum(1 for _ in file) # Calcul du nombre total de lignes
-    if len(rows) == 0 or len(rows) == total_rows - 1 :
-      print(f"No row with Name = '{row_to_delete}' was found.") # Indiqué si la ligne n'éxiste pas
+  try:  # Utilisation de try en cas d'erreurs du fichier
+    df = pd.read_csv('products.csv') 
+    reader = csv.DictReader(open('products.csv')) 
+    rows = [row for row in reader if row["P_name"] != row_to_delete]  # Définir les lignes qui ne correspondent pas à celle indiqué pour suppression
+    total_rows = len(df)  # Calcul du nombre total de lignes
+    if len(rows) == 0 or len(rows) == total_rows:
+      print(f"No row with Name = '{row_to_delete}' was found.")  # Indiqué si la ligne n'éxiste pas
       return
-    with open(produits, 'w', newline='') as file :
-      fieldnames = reader.fieldnames
+    with open('products.csv', 'w', newline='') as file:
+      fieldnames = reader.fieldnames  
       writer = csv.DictWriter(file, fieldnames=fieldnames)
       writer.writeheader()
-      writer.writerows(rows) # Réecrire liste sans la ligne définis pour deletion
+      writer.writerows(rows)  # Réecrire liste sans la ligne définis pour deletion
     print(f"The product : {row_to_delete} has been deleted.")
 
   except FileNotFoundError:
-    print(f"Error: The file '{produits}' does not exist.")
+    print(f"Error: The file '{produits}' does not exist.") #'produits' variable is not defined. You should use products.csv or the defined filename
   except KeyError:
     print(f"Error: The column 'P_name' does not exist in the file.")
 
@@ -85,7 +87,7 @@ def delete_product() :
 def binary_search() :
     product_name = input("Enter product name for search : ") # Demander quel produit à rechercher 
     try :
-        with open(produits, 'r') as file :
+        df = pd.read.csv('products_functions.py')
             reader = csv.DictReader(file)
             rows = sorted(reader, key=lambda row: row['P_name'].lower()) # Trier liste par la colonne 'P_name' avec sorted() 
             # utliser lambda comme fonction anonyme pour convertir toutes les lettres en minuscule
@@ -115,7 +117,8 @@ def binary_search() :
 # load data 
 def load_data(filename):
   data = []
-  with open(filename, 'r') as file:
+  df = pd.DataFrame(products_data user_db)
+  df = pd.read.csv('products_data.py' , 'user_db.py')
     reader = csv.reader(file)
     next(reader)  # Ignorer la ligne header
     for row in reader:

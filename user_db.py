@@ -19,3 +19,5 @@ with open('users.csv', 'w', newline='') as file :
     field = ['ID', 'first_name', 'last_name', 'username', 'password', 'order_date']
     writer.writerow(field)
     writer.writerows(user_data)
+
+# Hash passwords and add salt column
