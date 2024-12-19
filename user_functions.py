@@ -21,14 +21,30 @@ def display_menu() :
     print("\n Interactive menu : ")
     print("1. Sign in")
     print("2. Sign up")
+    print("3. Change user info")
+    print("4. Delete account")
     option = input("Enter your choice : ")
     return option
+
+# read data in df
+def load_hashed_user_data():
+    hashed_user_data = {}
+    try:
+        df = pd.read_csv('users_hashed.csv')
+        for _, row in df.iterrows() :
+            hashed_user_data[row['username']] = {
+                'password': row['password']
+            }
+    except FileNotFoundError:
+        print(f"Error: The file 'users_hashed.csv' does not exist.")
+    return hashed_user_data
+
 
 # read data in df
 def load_user_data():
     user_data = {}
     try:
-        df = pd.read_csv('users_hashed.csv')
+        df = pd.read_csv('users.csv')
         for _, row in df.iterrows() :
             user_data[row['username']] = {
                 'password': row['password']
@@ -114,77 +130,67 @@ def new_user() :
         orders_df.to_csv(orders_file, index=False)
     print(f"Orders file '{orders_file}' created in '{folder_path}' folder.")
 
-# def delete_user():
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# delete user 
+def delete_user():
+    print("You can only delete your own account.")
+    hashed_user_data = load_hashed_user_data()
+    print("Please login first : ")
+    input_username = input("Enter your username : ").strip()
+    if input_username in hashed_user_data :
+        input_password = input("Enter password : ").strip()
+        hashed_password = hashed_user_data[input_username]['password']
+        if hashlib.sha256(input_password.encode()).hexdigest() == hashed_password :
+            print("Successful login, you can now delete your account.")
+            user_to_delete = input("Enter the account you wish to delete: ")
+            #Lecture des données d'utilisateur csv en pandas
+            df = pd.read_csv('users_hashed.csv')
+            #Vérificatin de la présence de l'utilisateur dans la DataBase
+            if user_to_delete not in df['username'].values:
+                print(f"No user with Name = '{user_to_delete}' was found.")
+                return
+            #Séléction de l'utilisateur à supprimer de la DataFrame 
+            df = df[df['username'] != user_to_delete]
+            #Enregistrement de la DataFRame modifée dans le fichier csv 
+            df.to_csv('users_hashed.csv', index=False)
+            print(f"The account: {user_to_delete} has been deleted.")
+        else :
+            print("Incorrect password.")
+    else :
+        print("username not found.")
 
 # Change data
-# def change_data() : 
-#     row_to_change = input("Enter your username : ")
-#     value_to_change = input("Enter the data you wish to change (username, password) : ")
-#     if value_to_change not in ['username', 'password'] :
-#         print("Invalid input")
-#         return 
-#     replacement_value = input(f"Enter your new {value_to_change} : ") 
-#     row_index = df.loc[df['username'] == row_to_change]
-#     try : 
-#         if value_to_change == 'username' : 
-#             new_username = input(f"Enter your new username : ")
-#             df.loc[row_index, 'username'] = new_username 
-#             print("Username successfully updated ! ")
-#         elif value_to_change == 'password' : 
-#             new_password = input(f"Enter your new password : ")
-#             df.loc[row_index, 'password'] = new_password
-#             print("Password successfully updated ! ")
-#         else :
-#             print("Invalid input")
-#             break
-#     except FileNotFoundError : 
-#         print("Error : database not found")
+def change_data() : 
+    hashed_user_data = load_hashed_user_data()
+    print("Please login first : ")
+    input_username = input("Enter your username : ").strip()
+    if input_username in hashed_user_data :
+        input_password = input("Enter password : ").strip()
+        hashed_password = hashed_user_data[input_username]['password']
+        if hashlib.sha256(input_password.encode()).hexdigest() == hashed_password :
+            print("Successful login, you can now change your user data.")
+            row_to_change = input("Enter your username : ")
+            value_to_change = input("Enter the data you wish to change (username, password) : ")
+            if value_to_change not in ['username', 'password'] :
+                print("Invalid input")
+                return 
+            replacement_value = input(f"Enter your new {value_to_change} : ") 
+            row_index = df.loc[df['username'] == row_to_change]
+            try : 
+                if value_to_change == 'username' : 
+                    new_username = input(f"Enter your new username : ")
+                    df.loc[row_index, 'username'] = new_username 
+                    print("Username successfully updated ! ")
+                elif value_to_change == 'password' : 
+                    new_password = input(f"Enter your new password : ")
+                    hashed_new_password = hashlib.sha256(new_password.encode()).hexdigest()
+                    df.loc[row_index, 'password'] = hashed_new_password
+                    print("Password successfully updated ! ")
+                else :
+                    print("Invalid input")
+            except FileNotFoundError : 
+                print("Error : database not found")
+        else :
+            print("Incorrect password.")
+    else :
+        print("username not found.")
 
