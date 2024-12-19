@@ -1,7 +1,7 @@
 import pandas as pd 
 from datetime import date 
 # Generate unique salt
-import uuid 
+# import uuid 
 import os
 # Import products menu function
 from menu_products import *
@@ -28,39 +28,23 @@ def display_menu() :
 
 # read data in df
 def load_hashed_user_data():
-    hashed_user_data = {}
-    try:
-        df = pd.read_csv('users_hashed.csv')
-        for _, row in df.iterrows() :
-            hashed_user_data[row['username']] = {
-                'password': row['password']
-            }
-    except FileNotFoundError:
-        print(f"Error: The file 'users_hashed.csv' does not exist.")
-    return hashed_user_data
-
-
-# read data in df
-def load_user_data():
     user_data = {}
-    try:
-        df = pd.read_csv('users.csv')
-        for _, row in df.iterrows() :
-            user_data[row['username']] = {
-                'password': row['password']
-            }
-    except FileNotFoundError:
-        print(f"Error: The file 'users_hashed.csv' does not exist.")
+    df = pd.read_csv('users_hashed.csv')
+    for _, row in df.iterrows() :
+        user_data[row['username']] = {
+            'password': row['password']
+        }
     return user_data
 
 # login function
 def login() : 
-    user_data = load_user_data()
+    hashed_user_data = load_hashed_user_data()
     input_username = input("Enter your username : ").strip()
-    if input_username in user_data :
+    if input_username in hashed_user_data :
         input_password = input("Enter password : ").strip()
-        hashed_password = user_data[input_username]['password']
-        if hashlib.sha256(input_password.encode()).hexdigest() == hashed_password :
+        hashed_password = hashed_user_data[input_username]['password']
+        input_password_hash = hashlib.sha256(input_password.encode()).hexdigest()
+        if input_password_hash == hashed_password :
             print("Login successful !")
             # redirect to 'products_function.py' 
             products_main(input_username)

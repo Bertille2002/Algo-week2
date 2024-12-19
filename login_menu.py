@@ -2,7 +2,7 @@ import pandas as pd
 from user_functions import * 
 
 def main():
-    users = 'users.csv'
+    users = 'users_hashed.csv'
     while True :
         input = display_menu()
         if input == "1" :

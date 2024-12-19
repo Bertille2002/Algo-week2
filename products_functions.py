@@ -23,23 +23,19 @@ def sort_menu():
   return sort_choice
 
 # Option 1 : Afficher la liste de produits 
-def view_names() :
-  with open(produits, 'r') as file : # Ouvre notre liste de produit avec le mode read 
-    reader = csv.DictReader(file) # Lecture d'un fichier csv et convertion en dictionnaire Python 
-    print("List of products : ")
-    for row in reader : # Parcours les lignes de donnees a partir du fichier csv 
-      print(row['P_name']) # Montre la colonne avec les noms des produits uniquement 
+def view_names(produits) :
+  df = pd.read_csv(produits)
+  print("List of products :")
+  for index, row in df.iterrows() : # Parcours les lignes de donnees a partir du fichier csv 
+    print(row['P_name']) # Montre la colonne avec les noms des produits uniquement 
 
 # Option 2 : Ajouter un nouveau produit 
 
 # Defintion de l'ID du nouveau produit, Permet d'avoir un ID unique pour chaque produit
 def next_id() : 
-  with open(produits,'r',newline='') as file : # Ouvre notre liste de produit avec le mode read
-    reader = csv.reader(file)
-    rows = list(reader)
-    last_row = rows[-1]
-    last_id = int(last_row[0]) # Trouver la derniere ID dans la liste
-    return last_id + 1 # résultat : ID pour nouveau produit
+  df = pd.read_csv(produits)
+  last_id = df['ID'].max() # Trouver la derniere ID dans la liste
+  return last_id + 1 # résultat : ID pour nouveau produit
 
 # Ajout du nouveau produit dans la liste
 def new_product() : 

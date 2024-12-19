@@ -1,6 +1,5 @@
 ### Menu interactif ###
-import csv
-from products_functions import *
+from prod_function_pandas import *
 from user_functions import *
 from login_menu import *
 import pandas as pd  
@@ -9,17 +8,16 @@ import pandas as pd
 def products_main(username):
   produits = f'csv_files/orders_{username}.csv' # definir le fichier individuel 
   print(f"Welcome, {username} ! You're now managing : {produits}.")
-  df = pd.read_csv(produits)
   while True :
     input = display_menu()
     if input == "1" :
-      view_names() # Voir la liste des produits, noms uniquement
+      view_names(produits) # Voir la liste des produits, noms uniquement
     elif input == "2" :
-      new_product() # Ajouter un produit a la bdd (base de donnees)
+      new_product(produits) # Ajouter un produit a la bdd (base de donnees)
     elif input == "3" :
-      delete_product() # Supprimer un produit de la bdd
+      delete_product(produits) # Supprimer un produit de la bdd
     elif input == "4" :
-      binary_search() # Recherche d'un produit, algorithme recherche binaire
+      binary_search(produits) # Recherche d'un produit, algorithme recherche binaire
     elif input == "5" :
       data = load_data(produits) # définir les donees dans la liste produits 
       sort_choice = sort_menu()

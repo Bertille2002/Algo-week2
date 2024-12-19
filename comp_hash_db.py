@@ -8,4 +8,3 @@ comp_hash_db = [
     ['SHA-256'],
     ['SHA-512']
 ]
-
