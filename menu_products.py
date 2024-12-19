@@ -9,6 +9,7 @@ import pandas as pd
 def products_main(username):
   produits = f'csv_files/orders_{username}.csv' # definir le fichier individuel 
   print(f"Welcome, {username} ! You're now managing : {produits}.")
+  df = pd.read_csv(produits)
   while True :
     input = display_menu()
     if input == "1" :

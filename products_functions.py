@@ -1,16 +1,17 @@
 import csv
+import pandas as pd 
 
 # Options du menu interactif 
 def display_menu():
-    print("\nInteractive Menu:")
-    print("1. View products only")
-    print("2. Add a new product")
-    print("3. Delete a product")
-    print("4. Search for a specific product")
-    print("5. Sort table")
-    print("6. Close file")
-    option = input("Enter your choice (1-6): ")
-    return option
+  print("\nInteractive Menu:")
+  print("1. View products only")
+  print("2. Add a new product")
+  print("3. Delete a product")
+  print("4. Search for a specific product")
+  print("5. Sort table")
+  print("6. Close file")
+  option = input("Enter your choice (1-6): ")
+  return option
 
 # Options du menu interactif de tri
 def sort_menu():

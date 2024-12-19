@@ -9,12 +9,12 @@ from menu_products import *
 import hashlib
 
 # Hash and salt password using SHA-256
-def hash_password(password: str, salt: str) -> str :
-    return hashlib.sha256((salt + password).encode('utf-8')).hexdigest()
+# def hash_password(password: str) -> str :
+#     return hashlib.sha256((password).encode('utf-8')).hexdigest()
 
 # Generate random salt function
-def generate_salt() -> str :
-    return uuid.uuid4().hex
+# def generate_salt() -> str :
+#     return uuid.uuid4().hex
 
 # Menu display options
 def display_menu() : 
@@ -28,14 +28,13 @@ def display_menu() :
 def load_user_data():
     user_data = {}
     try:
-        df = pd.read_csv('users.csv')
+        df = pd.read_csv('users_hashed.csv')
         for _, row in df.iterrows() :
             user_data[row['username']] = {
-                'salt': row['salt'],
                 'password': row['password']
             }
     except FileNotFoundError:
-        print(f"Error: The file 'users.csv' does not exist.")
+        print(f"Error: The file 'users_hashed.csv' does not exist.")
     return user_data
 
 # login function
@@ -44,9 +43,8 @@ def login() :
     input_username = input("Enter your username : ").strip()
     if input_username in user_data :
         input_password = input("Enter password : ").strip()
-        salt = user_data[input_username]['salt']
-        stored_hash = user_data[input_username]['password']
-        if hash_password(input_password, salt) == stored_hash :
+        hashed_password = user_data[input_username]['password']
+        if hashlib.sha256(input_password.encode()).hexdigest() == hashed_password :
             print("Login successful !")
             # redirect to 'products_function.py' 
             products_main(input_username)
@@ -59,7 +57,7 @@ def login() :
 
 # find last id for unique IDs
 def get_last_ID() : 
-    df = pd.read_csv('users.csv')
+    df = pd.read_csv('users_hashed.csv')
     if not df.empty :
         last_id = df['ID'].iloc[-1]
         return last_id
@@ -72,7 +70,7 @@ def new_user() :
     last_id = get_last_ID()
     # read existing user data
     try :
-        users_df = pd.read_csv('users.csv')
+        users_df = pd.read_csv('users_hashed.csv')
     except :
         users_df = pd.DataFrame(columns=["ID", "first_name", "last_name", "username", "password", "order_date"])
     # ask for sign up details 
@@ -91,23 +89,23 @@ def new_user() :
         print("Username already exists.")
         return
     # Genertate salt and hash for password 
-    salt = generate_salt()
-    hashed_password = hash_password(new_password, salt)
+    # salt = generate_salt()
+    hashed_password = hashlib.sha256(new_password.encode())
     # Define new row
     new_user_data = {
         'ID': [new_id],
         'first_name': [new_name],
         'last_name': [new_lname],
         'username': [new_username],
-        'password': [new_password],
+        'password': [hashed_password],
         'order_date': [new_date]
     }
     new_df = pd.DataFrame(new_user_data)
     # add new user info to csv file
     if not users_df.empty :
-        new_df.to_csv('users.csv', mode='a',index=False, header=False)
+        new_df.to_csv('users_hashed.csv', mode='a',index=False, header=False)
     else :
-        new_df.to_csv('users.csv', mode='w',index=False, header=True)
+        new_df.to_csv('users_hashed.csv', mode='w',index=False, header=True)
     print("New user added successfully!")
     # Create new csv products file
     orders_file = os.path.join(folder_path,f'orders_{new_username}.csv')
@@ -117,8 +115,8 @@ def new_user() :
     print(f"Orders file '{orders_file}' created in '{folder_path}' folder.")
 
 # def delete_user():
-        
-    
+
+
 
 
 

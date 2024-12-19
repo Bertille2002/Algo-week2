@@ -1,5 +1,6 @@
 import pandas as pd 
 import csv
+import hashlib 
 
 user_data = [
     [1,"Alice","Beaumont","alice12","abcd1234","12-05-24"],
@@ -20,4 +21,15 @@ with open('users.csv', 'w', newline='') as file :
     writer.writerow(field)
     writer.writerows(user_data)
 
-# Hash passwords and add salt column
+# Hash passwords
+
+def hash_passwords() :
+    df = pd.read_csv('users.csv')
+    def hash_value(password) : 
+        return hashlib.sha256(password.encode()).hexdigest()
+    df['password'] = df['password'].apply(hash_value)
+    df.to_csv('users_hashed.csv',index=False)
+    return df
+
+hashed_df = hash_passwords()
+print(hashed_df)
