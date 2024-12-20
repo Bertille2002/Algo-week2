@@ -10,10 +10,6 @@ def main():
         elif input == "2" :
             new_user()
         elif input == "3" :
-            change_data()
-        elif input == "4" : 
-            delete_user()
-        elif input == "5" :
             print("Closing program.")
             break
         else :

@@ -1,28 +1,15 @@
 import pandas as pd 
 from datetime import date 
-# Generate unique salt
-# import uuid 
 import os
-# Import products menu function
 from menu_products import *
-# Import to hash and salt passwords
 import hashlib
-
-# Hash and salt password using SHA-256
-# def hash_password(password: str) -> str :
-#     return hashlib.sha256((password).encode('utf-8')).hexdigest()
-
-# Generate random salt function
-# def generate_salt() -> str :
-#     return uuid.uuid4().hex
+from gestion_menu import *
 
 # Menu display options
 def display_menu() : 
     print("\n Interactive menu : ")
     print("1. Sign in")
     print("2. Sign up")
-    print("3. Change user info")
-    print("4. Delete account")
     option = input("Enter your choice : ")
     return option
 
@@ -36,7 +23,7 @@ def load_hashed_user_data():
         }
     return user_data
 
-# login function
+# Option 1 : login function
 def login() : 
     hashed_user_data = load_hashed_user_data()
     input_username = input("Enter your username : ").strip()
@@ -47,13 +34,13 @@ def login() :
         if input_password_hash == hashed_password :
             print("Login successful !")
             # redirect to 'products_function.py' 
-            products_main(input_username)
+            user_main(input_username)
         else :
             print("Incorrect password.")
     else :
         print("Username not found. Try again or create an account.")
 
-# sign up function 
+# Option 2 : sign up function 
 
 # find last id for unique IDs
 def get_last_ID() : 
@@ -89,7 +76,6 @@ def new_user() :
         print("Username already exists.")
         return
     # Genertate salt and hash for password 
-    # salt = generate_salt()
     hashed_password = hashlib.sha256(new_password.encode())
     # Define new row
     new_user_data = {
@@ -114,7 +100,7 @@ def new_user() :
         orders_df.to_csv(orders_file, index=False)
     print(f"Orders file '{orders_file}' created in '{folder_path}' folder.")
 
-# delete user 
+# Option 4 : delete user 
 def delete_user():
     print("You can only delete your own account.")
     hashed_user_data = load_hashed_user_data()
@@ -130,7 +116,7 @@ def delete_user():
             df = pd.read_csv('users_hashed.csv')
             #Vérificatin de la présence de l'utilisateur dans la DataBase
             if user_to_delete not in df['username'].values:
-                print(f"No user with Name = '{user_to_delete}' was found.")
+                print(f"No user with username = '{user_to_delete}' was found.")
                 return
             #Séléction de l'utilisateur à supprimer de la DataFrame 
             df = df[df['username'] != user_to_delete]
@@ -142,7 +128,7 @@ def delete_user():
     else :
         print("username not found.")
 
-# Change data
+# Option 3 : Change user data
 def change_data() : 
     hashed_user_data = load_hashed_user_data()
     print("Please login first : ")
@@ -152,7 +138,7 @@ def change_data() :
         hashed_password = hashed_user_data[input_username]['password']
         if hashlib.sha256(input_password.encode()).hexdigest() == hashed_password :
             print("Successful login, you can now change your user data.")
-            row_to_change = input("Enter your username : ")
+            row_to_change = input_username
             value_to_change = input("Enter the data you wish to change (username, password) : ")
             if value_to_change not in ['username', 'password'] :
                 print("Invalid input")
