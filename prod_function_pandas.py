@@ -82,29 +82,16 @@ def delete_product(chemin):
   except KeyError:
     print(f"Error: The column 'P_name' does not exist in the file.")
 
-# binary search
-def binary_search(df,column_name,target) :
-    df = df.sort_values(by=column_name) 
-    left, right = 0, len(df) - 1
-    while left <= right :
-        mid = (left+right)//2
-        mid_value = df.iloc[mid][column_name]
-        if mid_value == target :
-            return mid 
-        elif mid_value < target : 
-            left = mid + 1
-        else :
-            right = left + 1
-    return -1 
-
-def search_value_in_df(chemin) : 
+def search_prod() :
     df = pd.read_csv(chemin)
-    target_value = input("Enter the product you are searching for : ")
-    index = binary_search(df,'P_name',target_value)
-    if index != -1 :
-        print(f"{target_value} found at index {index}.")
+    prod_to_search = input("Enter the product you wish to search : ")
+    if prod_to_search is in df["P_name"] :
+        location = df["P_name"].index(prod_to_search)
+        return f"Product {prod_to_search} found at index {location}"
     else : 
-        print(f"{target_value} was not found.")
+        return f"Product {prod_to_search} not found "
+
+
 
 # sorting table by quantity
 def sort_quantity(chemin) :
