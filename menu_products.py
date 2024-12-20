@@ -17,20 +17,15 @@ def products_main(username):
     elif input == "3" :
       delete_product(produits) # Supprimer un produit de la bdd
     elif input == "4" :
-      binary_search(produits) # Recherche d'un produit, algorithme recherche binaire
-    elif input == "5" :
-      data = load_data(produits) # définir les donees dans la liste produits 
+      search_value_in_df(produits) # Recherche d'un produit, algorithme recherche binaire
+    elif input == "5" : 
       sort_choice = sort_menu()
       if sort_choice == "1" : # Tri de la bdd par quantité avec QuickSort 
-        quicksort(data) 
-        sorted_table(sorted_data)
+        sort_quantity(produits)
       elif sort_choice == "2" : # Tri par prix avec MergeSort
-        merge_sort(data, 3)
-        print("Sorted Data by Price:")
-        for row in data:
-          print(row)
+        sort_price(produits)
       elif sort_choice == "3" : # Tri par produit ordre alphabetique 
-        sort_alphabetically(data)
+        sort_name(produits)
       else : # Echec de la requete si la valeur saisie ne correspond pas a une option de tri défini
         print("Invalid option.")
     elif input == "6" : # Fermer le menu interactif 
